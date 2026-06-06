@@ -20,5 +20,5 @@ RUN mkdir -p logs uploads generated_pdfs/invoices
 # Expose port
 EXPOSE 8000
 
-# Run migrations and start server
-CMD ["sh", "-c", "uvicorn app.main:app --host 0.0.0.0 --port ${PORT:-8000}"]
+# Start server - use shell form so $PORT is expanded
+CMD sh -c "python -c 'from app.db.base import Base; from app.db.session import engine; from app.models import *; Base.metadata.create_all(bind=engine); print(\"Tables created\")' && uvicorn app.main:app --host 0.0.0.0 --port ${PORT:-8000}"
