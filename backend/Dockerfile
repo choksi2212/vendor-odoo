@@ -17,8 +17,11 @@ COPY . .
 # Create necessary directories
 RUN mkdir -p logs uploads generated_pdfs/invoices
 
+# Make start script executable
+RUN chmod +x start.sh
+
 # Expose port
 EXPOSE 8000
 
-# Start server - use shell form so $PORT is expanded
-CMD sh -c "python -c 'from app.db.base import Base; from app.db.session import engine; from app.models import *; Base.metadata.create_all(bind=engine); print(\"Tables created\")' && uvicorn app.main:app --host 0.0.0.0 --port ${PORT:-8000}"
+# Use the start script
+CMD ["./start.sh"]
