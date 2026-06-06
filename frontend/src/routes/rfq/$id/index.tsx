@@ -194,7 +194,9 @@ function RFQDetail() {
             <Item
               k="Invited Vendors"
               v={
-                rfq.assignedVendors && rfq.assignedVendors.length > 0
+                (rfq as any).vendors && (rfq as any).vendors.length > 0
+                  ? (rfq as any).vendors.map((v: any) => v.vendorName || v.name || v.vendor_name).join(", ")
+                  : rfq.assignedVendors && rfq.assignedVendors.length > 0
                   ? rfq.assignedVendors.map((v) => v.name).join(", ")
                   : "No vendors assigned"
               }
