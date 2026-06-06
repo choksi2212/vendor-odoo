@@ -73,7 +73,7 @@ function RFQDetail() {
   };
 
   const getCurrentWorkflowStep = (status: string) => {
-    const steps = ["draft", "published", "quotations_received", "comparison", "approved", "po_generated"];
+    const steps = ["draft", "open", "quotations_received", "comparison", "approved", "po_generated"];
     return steps.indexOf(status.toLowerCase());
   };
 

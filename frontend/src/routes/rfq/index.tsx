@@ -94,7 +94,7 @@ function RFQList() {
         >
           <option value="all">All Status</option>
           <option value="draft">Draft</option>
-          <option value="published">Published</option>
+          <option value="open">Open</option>
           <option value="closed">Closed</option>
         </select>
       </div>

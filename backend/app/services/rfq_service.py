@@ -89,13 +89,20 @@ def get_rfqs(
     # Role-based filtering
     if user_role == UserRole.VENDOR:
         # Vendors only see open RFQs they are assigned to
-        query = query.join(RFQVendor, RFQ.id == RFQVendor.rfq_id).filter(
-            RFQVendor.vendor_id.in_(
-                db.query(Vendor.id).filter(Vendor.email == db.query(
-                    # This is simplified - in practice vendor user would be linked
-                ).scalar_subquery())
+        # Match vendor by email (user email must match vendor email)
+        from app.models.user import User
+        vendor = db.query(Vendor).join(
+            User, User.email == Vendor.email
+        ).filter(User.id == user_id).first()
+        
+        if vendor:
+            query = query.join(RFQVendor, RFQ.id == RFQVendor.rfq_id).filter(
+                RFQVendor.vendor_id == vendor.id
             )
-        )
+        else:
+            # Vendor user not linked to any vendor entity - return empty results
+            query = query.filter(RFQ.id == None)
+        
         query = query.filter(RFQ.status == RFQStatus.OPEN)
 
     # Search filter
