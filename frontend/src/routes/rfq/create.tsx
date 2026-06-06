@@ -41,7 +41,7 @@ function CreateRFQ() {
     try {
       setLoadingVendors(true);
       const data = await vendorAPI.list({ status: "active" });
-      setVendors(Array.isArray(data) ? data : []);
+      setVendors(Array.isArray(data) ? data : (data?.items || []));
     } catch (err: any) {
       console.error("Failed to load vendors:", err);
     } finally {
@@ -246,7 +246,7 @@ function CreateRFQ() {
                     <div className="flex-1">
                       <p className="font-medium">{v.name}</p>
                       <p className="text-xs text-muted-foreground">
-                        {v.category} · ★ {v.rating ? v.rating.toFixed(1) : "N/A"}
+                        {(v.category as any)?.name || (typeof v.category === 'string' ? v.category : '-')} · ★ {v.rating ? v.rating.toFixed(1) : "N/A"}
                       </p>
                     </div>
                   </label>
