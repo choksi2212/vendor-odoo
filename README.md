@@ -6,6 +6,12 @@
 
 ### Enterprise-Grade Procurement & Vendor Management ERP System
 
+<br/>
+
+## [🚀 LIVE DEMO → https://vendor-odoo.vercel.app](https://vendor-odoo.vercel.app)
+
+<br/>
+
 [![FastAPI](https://img.shields.io/badge/FastAPI-0.115.5-009688?style=flat-square&logo=fastapi&logoColor=white)](https://fastapi.tiangolo.com/)
 [![PostgreSQL](https://img.shields.io/badge/PostgreSQL-18-336791?style=flat-square&logo=postgresql&logoColor=white)](https://postgresql.org/)
 [![React](https://img.shields.io/badge/React_19-20232A?style=flat-square&logo=react&logoColor=61DAFB)](https://react.dev/)
@@ -22,7 +28,11 @@
 
 <br/>
 
-**[API Documentation](http://localhost:8000/docs)** · **[Frontend](http://localhost:5173)** · **[Database Schema](#database-design)**
+| | Link |
+|---|---|
+| **Live Application** | **https://vendor-odoo.vercel.app** |
+| **Backend API** | https://vendor-odoo-production.up.railway.app |
+| **API Documentation** | https://vendor-odoo-production.up.railway.app/docs |
 
 </div>
 
