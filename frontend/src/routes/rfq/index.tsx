@@ -51,7 +51,7 @@ function RFQList() {
       if (search) params.search = search;
       if (statusFilter !== "all") params.status = statusFilter;
       const data = await rfqAPI.list(params);
-      setRfqs(Array.isArray(data) ? data : []);
+      setRfqs(Array.isArray(data) ? data : (data?.items || []));
     } catch (err: any) {
       setError(err.message || "Failed to load RFQs");
     } finally {

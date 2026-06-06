@@ -56,7 +56,7 @@ function RFQDetail() {
         quotationAPI.listForRFQ(id),
       ]);
       setRfq(rfqData);
-      setQuotations(Array.isArray(quotationsData) ? quotationsData : []);
+      setQuotations(Array.isArray(quotationsData) ? quotationsData : (quotationsData?.items || []));
     } catch (err: any) {
       setError(err.message || "Failed to load RFQ details");
     } finally {

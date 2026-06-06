@@ -58,7 +58,7 @@ function CompareQuotations() {
         quotationAPI.compareForRFQ(id),
       ]);
       setRfq(rfqData);
-      setQuotations(Array.isArray(comparisonData) ? comparisonData : []);
+      setQuotations(Array.isArray(comparisonData) ? comparisonData : (comparisonData?.items || []));
     } catch (err: any) {
       setError(err.message || "Failed to load comparison data");
     } finally {

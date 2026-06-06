@@ -35,7 +35,7 @@ function QuotationsPage() {
       setError("");
       // Backend filters by current vendor automatically
       const data = await quotationAPI.list();
-      setQuotations(Array.isArray(data) ? data : []);
+      setQuotations(Array.isArray(data) ? data : (data?.items || []));
     } catch (err: any) {
       setError(err.message || "Failed to load quotations");
     } finally {
