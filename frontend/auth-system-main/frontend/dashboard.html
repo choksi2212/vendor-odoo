@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Arial Sense — Dashboard</title>
+  <link rel="stylesheet" href="style.css?v=5" />
+</head>
+<body class="dash-body">
+
+  <!-- Navbar -->
+  <nav class="navbar">
+    <div class="nav-brand">
+      <div class="logo-mark">
+        <svg width="18" height="18" viewBox="0 0 18 18" fill="none">
+          <path d="M9 2L15.5 14H2.5L9 2Z" fill="white" fill-opacity="0.9"/>
+          <path d="M9 7L12 13H6L9 7Z" fill="white" fill-opacity="0.35"/>
+        </svg>
+      </div>
+      <span class="nav-brand-name">Arial Sense</span>
+    </div>
+    <button class="btn-ghost" id="logout-btn">Sign Out</button>
+  </nav>
+
+  <!-- Main content -->
+  <main class="dash-content">
+
+    <h1 class="dash-heading">Welcome back</h1>
+    <p class="dash-sub">Your account details are shown below.</p>
+
+    <!-- Skeleton while loading -->
+    <div class="user-card" id="skeleton-card">
+      <div class="user-card-header">
+        <div class="avatar" style="background: var(--border);"></div>
+        <div>
+          <div class="skeleton" style="width: 140px; margin-bottom: 6px;"></div>
+          <div class="skeleton" style="width: 80px; height: 11px;"></div>
+        </div>
+      </div>
+      <div class="info-list">
+        <div class="info-row">
+          <div class="skeleton" style="width: 60px;"></div>
+          <div class="skeleton" style="width: 180px;"></div>
+        </div>
+        <div class="info-row">
+          <div class="skeleton" style="width: 50px;"></div>
+          <div class="skeleton" style="width: 70px;"></div>
+        </div>
+        <div class="info-row">
+          <div class="skeleton" style="width: 90px;"></div>
+          <div class="skeleton" style="width: 70px;"></div>
+        </div>
+        <div class="info-row">
+          <div class="skeleton" style="width: 70px;"></div>
+          <div class="skeleton" style="width: 120px;"></div>
+        </div>
+        <div class="info-row">
+          <div class="skeleton" style="width: 80px;"></div>
+          <div class="skeleton" style="width: 240px;"></div>
+        </div>
+        <div class="info-row">
+          <div class="skeleton" style="width: 90px;"></div>
+          <div class="skeleton" style="width: 120px;"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Real user card (hidden until data loads) -->
+    <div class="user-card hidden" id="user-card">
+      <div class="user-card-header">
+        <div class="avatar" id="avatar-initials"></div>
+        <div>
+          <div class="user-meta-name" id="user-display-name"></div>
+          <div class="user-meta-role">Member</div>
+        </div>
+      </div>
+
+      <div class="info-list">
+        <div class="info-row">
+          <span class="info-label">Email</span>
+          <span class="info-value" id="user-email"></span>
+        </div>
+        <div class="info-row">
+          <span class="info-label">Email status</span>
+          <span class="info-value" id="user-status"></span>
+        </div>
+        <div class="info-row">
+          <span class="info-label">Account</span>
+          <span class="info-value" id="user-active"></span>
+        </div>
+        <div class="info-row">
+          <span class="info-label">Two-factor auth</span>
+          <span class="info-value">
+            <span id="user-2fa"></span>
+            <button class="toggle-2fa-btn" id="toggle-2fa-btn" style="display:none;" onclick="_toggle2FA()"></button>
+          </span>
+        </div>
+        <div class="info-row">
+          <span class="info-label">Member since</span>
+          <span class="info-value" id="user-joined"></span>
+        </div>
+        <div class="info-row">
+          <span class="info-label">User ID</span>
+          <span class="info-value mono" id="user-id"></span>
+        </div>
+      </div>
+    </div>
+
+  </main>
+
+  <script src="app.js?v=4"></script>
+  <script>initDashboardPage();</script>
+</body>
+</html>

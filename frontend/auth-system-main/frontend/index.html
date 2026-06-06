@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Arial Sense — Sign In</title>
+  <link rel="stylesheet" href="style.css?v=5" />
+</head>
+<body class="auth-body">
+
+  <div class="auth-wrapper">
+    <div class="card">
+
+      <!-- Brand -->
+      <div class="brand">
+        <div class="logo-mark">
+          <svg width="18" height="18" viewBox="0 0 18 18" fill="none">
+            <path d="M9 2L15.5 14H2.5L9 2Z" fill="white" fill-opacity="0.9"/>
+            <path d="M9 7L12 13H6L9 7Z" fill="white" fill-opacity="0.35"/>
+          </svg>
+        </div>
+        <span class="brand-name">Arial Sense</span>
+      </div>
+
+      <!-- Tabs -->
+      <div class="tabs" role="tablist">
+        <button class="tab active" data-tab="signin" role="tab">Sign In</button>
+        <button class="tab"        data-tab="signup" role="tab">Sign Up</button>
+      </div>
+
+      <!-- ── Sign In Panel ── -->
+      <div class="form-panel active" id="signin-panel">
+        <form id="signin-form" novalidate>
+
+          <div class="field">
+            <label for="si-email">Email</label>
+            <input
+              id="si-email" type="email" name="email"
+              placeholder="you@example.com" autocomplete="email" required
+            />
+          </div>
+
+          <div class="field">
+            <label for="si-password">Password</label>
+            <div class="input-wrap">
+              <input
+                id="si-password" type="password" name="password"
+                placeholder="••••••••" autocomplete="current-password"
+                class="has-toggle" required
+              />
+              <button type="button" class="pw-toggle">Show</button>
+            </div>
+          </div>
+
+          <a href="#" class="forgot-link" id="forgot-link">Forgot password?</a>
+
+          <button type="submit" class="btn-primary">Sign In</button>
+        </form>
+      </div>
+
+      <!-- ── Sign Up Panel ── -->
+      <div class="form-panel" id="signup-panel">
+        <form id="signup-form" novalidate>
+
+          <div class="field">
+            <label for="su-email">Email</label>
+            <input
+              id="su-email" type="email" name="email"
+              placeholder="you@example.com" autocomplete="email" required
+            />
+          </div>
+
+          <div class="field">
+            <label for="su-username">Username</label>
+            <input
+              id="su-username" type="text" name="username"
+              placeholder="e.g. manas_dev" autocomplete="username"
+              minlength="3" maxlength="30" required
+            />
+            <span class="field-hint">3–30 chars · letters, numbers, underscores · case-insensitive</span>
+          </div>
+
+          <div class="field">
+            <label for="su-password">Password</label>
+            <div class="input-wrap">
+              <input
+                id="su-password" type="password" name="password"
+                placeholder="••••••••" autocomplete="new-password"
+                class="has-toggle" required
+              />
+              <button type="button" class="pw-toggle">Show</button>
+            </div>
+            <div class="strength-track">
+              <div class="strength-fill" id="strength-fill"></div>
+            </div>
+          </div>
+
+          <div class="field">
+            <label for="su-confirm">Confirm Password</label>
+            <div class="input-wrap">
+              <input
+                id="su-confirm" type="password" name="confirm_password"
+                placeholder="••••••••" autocomplete="new-password"
+                class="has-toggle" required
+              />
+              <button type="button" class="pw-toggle">Show</button>
+            </div>
+          </div>
+
+          <button type="submit" class="btn-primary">Create Account</button>
+        </form>
+      </div>
+
+      <!-- ── 2FA OTP Panel ── -->
+      <div class="form-panel" id="otp-panel">
+        <a href="#" class="back-link" id="back-from-otp">&#8592; Back to sign in</a>
+        <p class="forgot-title">Check your email</p>
+        <p class="forgot-sub">Enter the 6-digit code sent to your email.<br>It expires in 5 minutes.</p>
+        <form id="otp-form" novalidate>
+          <div class="field">
+            <label for="otp-input">Verification Code</label>
+            <input id="otp-input" type="text" name="otp" placeholder="000000"
+                   inputmode="numeric" maxlength="6" autocomplete="one-time-code"
+                   class="otp-input" required />
+          </div>
+          <button type="submit" class="btn-primary">Verify Code</button>
+        </form>
+      </div>
+
+      <!-- ── Forgot Password Panel ── -->
+      <div class="form-panel" id="forgot-panel">
+        <a href="#" class="back-link" id="back-to-signin">
+          &#8592; Back to sign in
+        </a>
+        <p class="forgot-title">Reset your password</p>
+        <p class="forgot-sub">Enter your email and we'll send you a reset link.</p>
+
+        <form id="forgot-form" novalidate>
+          <div class="field">
+            <label for="fp-email">Email</label>
+            <input
+              id="fp-email" type="email" name="email"
+              placeholder="you@example.com" autocomplete="email" required
+            />
+          </div>
+          <button type="submit" class="btn-primary">Send Reset Link</button>
+        </form>
+      </div>
+
+      <!-- Toast -->
+      <div class="toast hidden" id="toast" role="alert"></div>
+
+    </div>
+  </div>
+
+  <script src="app.js?v=5"></script>
+  <script>initAuthPage();</script>
+</body>
+</html>

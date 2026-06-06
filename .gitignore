@@ -1,0 +1,33 @@
+# Python
+__pycache__/
+*.py[cod]
+*.so
+.venv/
+venv/
+.env
+*.db
+
+# Node
+node_modules/
+dist/
+.output/
+
+# IDE
+.vscode/
+.idea/
+*.swp
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Test/Build
+.pytest_cache/
+.coverage
+htmlcov/
+*.log
+
+# Generated
+backend/uploads/
+backend/generated_pdfs/
+backend/logs/
