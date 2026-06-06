@@ -5,6 +5,7 @@ import { DataTable, Td, Tr } from "@/components/Table";
 import { StatusBadge } from "@/components/Badge";
 import { Button, LinkButton } from "@/components/Button";
 import { rfqAPI } from "@/lib/api/endpoints";
+import { useAuth } from "@/context/AuthContext";
 import { inputCls } from "@/components/AuthShell";
 import { Loader2, Search, AlertCircle } from "lucide-react";
 
@@ -25,6 +26,8 @@ interface RFQ {
 
 function RFQList() {
   const nav = useNavigate();
+  const { role } = useAuth();
+  const isVendor = role === "Vendor";
   const [rfqs, setRfqs] = useState<RFQ[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
@@ -72,7 +75,7 @@ function RFQList() {
       <PageHeader
         title="Request for Quotations"
         breadcrumb={[{ label: "Workspace", to: "/dashboard" }, { label: "RFQs" }]}
-        actions={<Button onClick={() => nav({ to: "/rfq/create" })}>+ Create RFQ</Button>}
+        actions={!isVendor && <Button onClick={() => nav({ to: "/rfq/create" })}>+ Create RFQ</Button>}
       />
 
       {/* Filters */}

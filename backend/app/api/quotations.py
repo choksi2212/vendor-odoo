@@ -1,5 +1,6 @@
 """Quotation management API endpoints."""
 
+import logging
 from typing import Optional
 from fastapi import APIRouter, Depends, Query, Request
 from sqlalchemy.orm import Session, joinedload
@@ -17,6 +18,7 @@ from app.schemas.quotation import (
 )
 from app.services import quotation_service
 
+logger = logging.getLogger(__name__)
 router = APIRouter()
 
 
@@ -30,7 +32,7 @@ def list_quotations(
 ):
     """
     List quotations with optional filters.
-    - Vendors: see only their own quotations
+    - Vendors: see only their own quotations (matched by email)
     - Others: see all quotations (can filter by vendor_id, rfq_id, status)
     """
     query = db.query(Quotation).options(
@@ -41,13 +43,22 @@ def list_quotations(
     # Role-based filtering
     if current_user.role == UserRole.VENDOR:
         # Vendors only see their own quotations
-        # Match vendor by email
+        # Match vendor by email - critical for vendor users to see their data
         vendor = db.query(Vendor).filter(Vendor.email == current_user.email).first()
         if vendor:
             query = query.filter(Quotation.vendor_id == vendor.id)
+            logger.info(
+                "Vendor user %s (%s) matched to vendor entity %s (%s)",
+                current_user.id, current_user.email, vendor.id, vendor.name
+            )
         else:
             # Vendor user not linked to vendor entity - return empty
-            query = query.filter(Quotation.id == None)
+            # This happens when a vendor user exists but no vendor entity with matching email
+            logger.warning(
+                "Vendor user %s (%s) has no matching vendor entity - returning empty quotations",
+                current_user.id, current_user.email
+            )
+            return []  # Return empty list instead of filtering to None
     else:
         # Officers/Managers/Admins can filter
         if vendor_id:

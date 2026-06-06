@@ -91,17 +91,25 @@ def get_rfqs(
         # Vendors only see open RFQs they are assigned to
         # Match vendor by email (user email must match vendor email)
         from app.models.user import User
-        vendor = db.query(Vendor).join(
-            User, User.email == Vendor.email
-        ).filter(User.id == user_id).first()
+        vendor = db.query(Vendor).filter(Vendor.email == db.query(User.email).filter(
+            User.id == user_id
+        ).scalar_subquery()).first()
         
         if vendor:
             query = query.join(RFQVendor, RFQ.id == RFQVendor.rfq_id).filter(
                 RFQVendor.vendor_id == vendor.id
             )
+            logger.info(
+                "Vendor user %s matched to vendor entity %s (%s) - filtering RFQs",
+                user_id, vendor.id, vendor.name
+            )
         else:
             # Vendor user not linked to any vendor entity - return empty results
-            query = query.filter(RFQ.id == None)
+            logger.warning(
+                "Vendor user %s has no matching vendor entity - returning empty RFQs",
+                user_id
+            )
+            return [], 0
         
         query = query.filter(RFQ.status == RFQStatus.OPEN)
 

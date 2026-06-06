@@ -216,3 +216,62 @@ async def send_otp_email(to: str, otp: str) -> None:
 </p>"""
     await _send("Your login OTP - VendorBridge", to, _wrap(body))
 
+
+# ─── Business Email Senders ───────────────────────────────────────────────────
+
+
+async def send_rfq_invitation_email(
+    to: str,
+    vendor_name: str,
+    rfq_title: str,
+    rfq_id: str,
+    product_name: str,
+    quantity: int,
+    unit: str,
+    deadline: str,
+) -> None:
+    """Send RFQ invitation to a vendor."""
+    rfq_link = f"{settings.APP_BASE_URL}/rfq/{rfq_id}"
+    body = f"""
+<h2 style="margin:0 0 10px;font-size:22px;font-weight:700;color:#0f0f1a;">
+  New RFQ Invitation
+</h2>
+<p style="color:#6b7280;line-height:1.65;margin:0 0 8px;">
+  Hello <strong style="color:#0f0f1a;">{vendor_name}</strong>,
+</p>
+<p style="color:#6b7280;line-height:1.65;margin:0 0 24px;">
+  You have been invited to submit a quotation for a new RFQ.
+</p>
+
+<div style="background:#f9fafb;border:1px solid #e5e7eb;border-radius:10px;padding:20px;margin:0 0 24px;">
+  <h3 style="margin:0 0 12px;font-size:16px;font-weight:600;color:#0f0f1a;">
+    {rfq_title}
+  </h3>
+  <table style="width:100%;color:#6b7280;font-size:14px;">
+    <tr>
+      <td style="padding:4px 0;"><strong>Product:</strong></td>
+      <td style="padding:4px 0;text-align:right;">{product_name}</td>
+    </tr>
+    <tr>
+      <td style="padding:4px 0;"><strong>Quantity:</strong></td>
+      <td style="padding:4px 0;text-align:right;">{quantity} {unit}</td>
+    </tr>
+    <tr>
+      <td style="padding:4px 0;"><strong>Deadline:</strong></td>
+      <td style="padding:4px 0;text-align:right;color:#dc2626;font-weight:500;">{deadline}</td>
+    </tr>
+  </table>
+</div>
+
+<a href="{rfq_link}"
+   style="display:inline-block;background:#2563eb;color:#ffffff;text-decoration:none;
+          padding:13px 28px;border-radius:8px;font-size:14px;font-weight:500;">
+  View RFQ & Submit Quote
+</a>
+
+<p style="color:#9ca3af;font-size:12px;margin:24px 0 0;line-height:1.6;">
+  Please submit your quotation before the deadline.<br>
+  Direct link: <a href="{rfq_link}" style="color:#2563eb;word-break:break-all;">{rfq_link}</a>
+</p>"""
+    await _send(f"RFQ Invitation: {rfq_title} - VendorBridge", to, _wrap(body))
+

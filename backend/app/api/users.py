@@ -38,3 +38,44 @@ def disable_2fa(
     current_user.is_2fa_enabled = False
     db.commit()
     return {"message": "Two-factor authentication disabled."}
+
+
+@router.get("/me/vendor-profile")
+def get_vendor_profile(
+    current_user: User = Depends(get_current_user),
+    db: Session = Depends(get_db),
+):
+    """
+    Get vendor profile for vendor users.
+    Returns vendor entity linked by email matching.
+    """
+    from app.models.vendor import Vendor
+    from app.models.user import UserRole
+    
+    if current_user.role != UserRole.VENDOR:
+        return {
+            "is_vendor_user": False,
+            "has_vendor_entity": False,
+            "message": "Not a vendor user"
+        }
+    
+    vendor = db.query(Vendor).filter(Vendor.email == current_user.email).first()
+    
+    if vendor:
+        return {
+            "is_vendor_user": True,
+            "has_vendor_entity": True,
+            "vendor_id": str(vendor.id),
+            "vendor_name": vendor.name,
+            "vendor_email": vendor.email,
+            "vendor_status": vendor.status.value if hasattr(vendor.status, 'value') else str(vendor.status),
+            "message": "Vendor profile linked successfully"
+        }
+    else:
+        return {
+            "is_vendor_user": True,
+            "has_vendor_entity": False,
+            "user_email": current_user.email,
+            "message": f"No vendor entity found with email {current_user.email}. Please contact admin to create a vendor profile with this email.",
+        }
+

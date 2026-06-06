@@ -225,7 +225,7 @@ def assign_vendors(
 
 
 @router.post("/{rfq_id}/publish", response_model=RFQResponse)
-def publish_rfq(
+async def publish_rfq(
     rfq_id: str,
     request: Request,
     current_user: User = Depends(
@@ -233,13 +233,48 @@ def publish_rfq(
     ),
     db: Session = Depends(get_db),
 ):
-    """Publish an RFQ (draft -> open). Requires at least one vendor assigned."""
+    """Publish an RFQ (draft -> open). Requires at least one vendor assigned. Sends email to all assigned vendors."""
+    from fastapi import BackgroundTasks
+    from app.core import email
+    
     rfq = rfq_service.publish_rfq(
         rfq_id=rfq_id,
         user_id=str(current_user.id),
         db=db,
         request=request,
     )
+    
+    # Get assigned vendors and send emails
+    from app.models.rfq import RFQVendor
+    from app.models.vendor import Vendor
+    
+    vendor_associations = db.query(RFQVendor).filter(
+        RFQVendor.rfq_id == rfq_id
+    ).all()
+    
+    # Send email invitations to all assigned vendors
+    import asyncio
+    email_tasks = []
+    for va in vendor_associations:
+        vendor = db.query(Vendor).filter(Vendor.id == va.vendor_id).first()
+        if vendor and vendor.email:
+            email_tasks.append(
+                email.send_rfq_invitation_email(
+                    to=vendor.email,
+                    vendor_name=vendor.name,
+                    rfq_title=rfq.title,
+                    rfq_id=str(rfq.id),
+                    product_name=rfq.product_name,
+                    quantity=rfq.quantity,
+                    unit=rfq.unit,
+                    deadline=rfq.deadline.strftime("%B %d, %Y"),
+                )
+            )
+    
+    # Send all emails concurrently (fire and forget)
+    if email_tasks:
+        asyncio.create_task(asyncio.gather(*email_tasks, return_exceptions=True))
+    
     return RFQResponse(
         id=str(rfq.id),
         title=rfq.title,

@@ -5,6 +5,7 @@ import { Button } from "@/components/Button";
 import { Field, inputCls } from "@/components/AuthShell";
 import { FormSection } from "../vendors/add";
 import { rfqAPI, vendorAPI } from "@/lib/api/endpoints";
+import { useAuth } from "@/context/AuthContext";
 import { Loader2, AlertCircle } from "lucide-react";
 
 export const Route = createFileRoute("/rfq/create")({ component: CreateRFQ });
@@ -19,11 +20,19 @@ interface Vendor {
 
 function CreateRFQ() {
   const nav = useNavigate();
+  const { role } = useAuth();
   const [vendors, setVendors] = useState<Vendor[]>([]);
   const [loadingVendors, setLoadingVendors] = useState(true);
   const [selectedVendors, setSelectedVendors] = useState<string[]>([]);
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState("");
+
+  // Redirect vendors away from this page
+  useEffect(() => {
+    if (role === "Vendor") {
+      nav({ to: "/rfq" });
+    }
+  }, [role, nav]);
 
   // Form state
   const [title, setTitle] = useState("");
@@ -34,8 +43,10 @@ function CreateRFQ() {
   const [unit, setUnit] = useState("units");
 
   useEffect(() => {
-    loadVendors();
-  }, []);
+    if (role !== "Vendor") {
+      loadVendors();
+    }
+  }, [role]);
 
   const loadVendors = async () => {
     try {
