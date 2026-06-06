@@ -5,6 +5,7 @@ import { Button } from "@/components/Button";
 import { Field, inputCls } from "@/components/AuthShell";
 import { FormSection } from "../../vendors/add";
 import { rfqAPI, quotationAPI } from "@/lib/api/endpoints";
+import { api } from "@/lib/api/client";
 import { Loader2, AlertCircle } from "lucide-react";
 
 export const Route = createFileRoute("/quotations/submit/$rfqId")({ component: SubmitQuote });
@@ -47,17 +48,12 @@ function SubmitQuote() {
       setError("");
       
       // Load RFQ and vendor profile
-      const [rfqData, profileResponse] = await Promise.all([
+      const [rfqData, profileData] = await Promise.all([
         rfqAPI.getById(rfqId),
-        fetch("/api/users/me/vendor-profile", {
-          headers: {
-            Authorization: `Bearer ${localStorage.getItem("access_token")}`,
-          },
-        }),
+        api.get<any>("/api/users/me/vendor-profile"),
       ]);
       
       setRfq(rfqData);
-      const profileData = await profileResponse.json();
       setVendorProfile(profileData);
       
       if (!profileData.has_vendor_entity) {
