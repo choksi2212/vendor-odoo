@@ -148,7 +148,7 @@ def _wrap(body_html: str) -> str:
 
 async def send_verification_email(to: str, token: str) -> None:
     """Send email verification link."""
-    link = f"{settings.APP_BASE_URL}/verify-email.html?token={token}"
+    link = f"{settings.APP_BASE_URL}/verify-email?token={token}"
     body = f"""
 <h2 style="margin:0 0 10px;font-size:22px;font-weight:700;color:#0f0f1a;">
   Verify your email address
@@ -171,7 +171,7 @@ async def send_verification_email(to: str, token: str) -> None:
 
 async def send_reset_email(to: str, token: str) -> None:
     """Send password reset link."""
-    link = f"{settings.APP_BASE_URL}/reset-password.html?token={token}"
+    link = f"{settings.APP_BASE_URL}/reset-password?token={token}"
     body = f"""
 <h2 style="margin:0 0 10px;font-size:22px;font-weight:700;color:#0f0f1a;">
   Reset your password
@@ -215,3 +215,4 @@ async def send_otp_email(to: str, otp: str) -> None:
   VendorBridge will <strong>never</strong> ask you for it.
 </p>"""
     await _send("Your login OTP - VendorBridge", to, _wrap(body))
+
