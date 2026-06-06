@@ -3,7 +3,7 @@
 import math
 from typing import Optional
 
-from fastapi import APIRouter, Depends, Query, Request
+from fastapi import APIRouter, BackgroundTasks, Depends, Query, Request
 from sqlalchemy.orm import Session
 
 from app.core.dependencies import get_current_user, require_roles
@@ -225,9 +225,10 @@ def assign_vendors(
 
 
 @router.post("/{rfq_id}/publish", response_model=RFQResponse)
-async def publish_rfq(
+def publish_rfq(
     rfq_id: str,
     request: Request,
+    background_tasks: "BackgroundTasks",
     current_user: User = Depends(
         require_roles(UserRole.PROCUREMENT_OFFICER, UserRole.ADMIN)
     ),
@@ -236,6 +237,8 @@ async def publish_rfq(
     """Publish an RFQ (draft -> open). Requires at least one vendor assigned. Sends email to all assigned vendors."""
     from fastapi import BackgroundTasks
     from app.core import email
+    from app.models.rfq import RFQVendor
+    from app.models.vendor import Vendor
     
     rfq = rfq_service.publish_rfq(
         rfq_id=rfq_id,
@@ -244,22 +247,17 @@ async def publish_rfq(
         request=request,
     )
     
-    # Get assigned vendors and send emails
-    from app.models.rfq import RFQVendor
-    from app.models.vendor import Vendor
-    
+    # Get assigned vendors and send emails in background
     vendor_associations = db.query(RFQVendor).filter(
         RFQVendor.rfq_id == rfq_id
     ).all()
     
-    # Send email invitations to all assigned vendors
-    import asyncio
-    email_tasks = []
     for va in vendor_associations:
         vendor = db.query(Vendor).filter(Vendor.id == va.vendor_id).first()
         if vendor and vendor.email:
-            email_tasks.append(
-                email.send_rfq_invitation_email(
+            try:
+                background_tasks.add_task(
+                    email.send_rfq_invitation_email,
                     to=vendor.email,
                     vendor_name=vendor.name,
                     rfq_title=rfq.title,
@@ -269,11 +267,9 @@ async def publish_rfq(
                     unit=rfq.unit,
                     deadline=rfq.deadline.strftime("%B %d, %Y"),
                 )
-            )
-    
-    # Send all emails concurrently (fire and forget)
-    if email_tasks:
-        asyncio.create_task(asyncio.gather(*email_tasks, return_exceptions=True))
+            except Exception as e:
+                import logging
+                logging.getLogger(__name__).error(f"Failed to queue email for {vendor.email}: {e}")
     
     return RFQResponse(
         id=str(rfq.id),
