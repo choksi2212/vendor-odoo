@@ -1,11 +1,14 @@
 """Quotation management API endpoints."""
 
-from fastapi import APIRouter, Depends, Request
-from sqlalchemy.orm import Session
+from typing import Optional
+from fastapi import APIRouter, Depends, Query, Request
+from sqlalchemy.orm import Session, joinedload
 
 from app.core.dependencies import get_current_user, require_roles
 from app.db.session import get_db
 from app.models.user import User, UserRole
+from app.models.quotation import Quotation, QuotationStatus
+from app.models.vendor import Vendor
 from app.schemas.quotation import (
     QuotationComparison,
     QuotationCreate,
@@ -15,6 +18,49 @@ from app.schemas.quotation import (
 from app.services import quotation_service
 
 router = APIRouter()
+
+
+@router.get("", response_model=list[QuotationResponse])
+def list_quotations(
+    rfq_id: Optional[str] = None,
+    vendor_id: Optional[str] = None,
+    status: Optional[str] = None,
+    current_user: User = Depends(get_current_user),
+    db: Session = Depends(get_db),
+):
+    """
+    List quotations with optional filters.
+    - Vendors: see only their own quotations
+    - Others: see all quotations (can filter by vendor_id, rfq_id, status)
+    """
+    query = db.query(Quotation).options(
+        joinedload(Quotation.vendor),
+        joinedload(Quotation.rfq)
+    )
+    
+    # Role-based filtering
+    if current_user.role == UserRole.VENDOR:
+        # Vendors only see their own quotations
+        # Match vendor by email
+        vendor = db.query(Vendor).filter(Vendor.email == current_user.email).first()
+        if vendor:
+            query = query.filter(Quotation.vendor_id == vendor.id)
+        else:
+            # Vendor user not linked to vendor entity - return empty
+            query = query.filter(Quotation.id == None)
+    else:
+        # Officers/Managers/Admins can filter
+        if vendor_id:
+            query = query.filter(Quotation.vendor_id == vendor_id)
+        if rfq_id:
+            query = query.filter(Quotation.rfq_id == rfq_id)
+    
+    # Status filter (all roles)
+    if status:
+        query = query.filter(Quotation.status == status)
+    
+    quotations = query.order_by(Quotation.created_at.desc()).all()
+    return [_build_response(q) for q in quotations]
 
 
 @router.post("", response_model=QuotationResponse, status_code=201)
@@ -120,6 +166,7 @@ def _build_response(quotation) -> QuotationResponse:
     return QuotationResponse(
         id=str(quotation.id),
         rfq_id=str(quotation.rfq_id),
+        rfq_title=quotation.rfq.title if quotation.rfq else None,
         vendor_id=str(quotation.vendor_id),
         vendor_name=quotation.vendor.name if quotation.vendor else None,
         unit_price=quotation.unit_price,

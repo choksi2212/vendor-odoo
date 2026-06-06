@@ -25,6 +25,7 @@ function Dashboard() {
     const loadDashboard = async () => {
       try {
         setIsLoading(true);
+        setError(null);
         
         // Fetch dashboard stats (skip for vendors as they don't have access)
         if (!isVendor) {

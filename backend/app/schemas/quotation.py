@@ -33,6 +33,7 @@ class QuotationResponse(BaseModel):
     """Quotation response."""
     id: str
     rfq_id: str
+    rfq_title: Optional[str] = None
     vendor_id: str
     vendor_name: Optional[str] = None
     unit_price: Decimal
