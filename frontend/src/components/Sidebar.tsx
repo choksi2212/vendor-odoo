@@ -17,6 +17,7 @@ const navByRole: Record<Role, NavItem[]> = {
   ],
   Vendor: [
     { label: "Dashboard", to: "/dashboard" },
+    { label: "RFQs", to: "/rfq" },
     { label: "My Quotations", to: "/quotations" },
     { label: "Activity Logs", to: "/activity-logs" },
   ],
