@@ -130,9 +130,11 @@ function RFQList() {
           <p className="text-muted-foreground">
             {search || statusFilter !== "all"
               ? "No RFQs match your filters"
+              : isVendor
+              ? "No RFQs assigned to you yet. You will receive an email when a procurement officer invites you to submit a quotation."
               : "No RFQs yet. Create one to get started!"}
           </p>
-          {!search && statusFilter === "all" && (
+          {!search && statusFilter === "all" && !isVendor && (
             <Button onClick={() => nav({ to: "/rfq/create" })} className="mt-4">
               + Create First RFQ
             </Button>

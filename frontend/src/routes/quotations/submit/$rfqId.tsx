@@ -24,6 +24,7 @@ function SubmitQuote() {
   const { rfqId } = Route.useParams();
   const nav = useNavigate();
   const [rfq, setRfq] = useState<RFQ | null>(null);
+  const [vendorProfile, setVendorProfile] = useState<any>(null);
   const [loading, setLoading] = useState(true);
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState("");
@@ -37,17 +38,33 @@ function SubmitQuote() {
   const [notes, setNotes] = useState("");
 
   useEffect(() => {
-    loadRFQ();
+    loadData();
   }, [rfqId]);
 
-  const loadRFQ = async () => {
+  const loadData = async () => {
     try {
       setLoading(true);
       setError("");
-      const data = await rfqAPI.getById(rfqId);
-      setRfq(data);
+      
+      // Load RFQ and vendor profile
+      const [rfqData, profileResponse] = await Promise.all([
+        rfqAPI.getById(rfqId),
+        fetch("/api/users/me/vendor-profile", {
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem("access_token")}`,
+          },
+        }),
+      ]);
+      
+      setRfq(rfqData);
+      const profileData = await profileResponse.json();
+      setVendorProfile(profileData);
+      
+      if (!profileData.has_vendor_entity) {
+        setError("Your user account is not linked to a vendor entity. Please contact the administrator.");
+      }
     } catch (err: any) {
-      setError(err.message || "Failed to load RFQ details");
+      setError(err.message || "Failed to load data");
     } finally {
       setLoading(false);
     }
@@ -58,6 +75,10 @@ function SubmitQuote() {
     setError("");
 
     // Validation
+    if (!vendorProfile?.has_vendor_entity) {
+      setError("Vendor profile not found. Please contact administrator.");
+      return;
+    }
     if (!unitPrice || unitPrice <= 0) {
       setError("Unit price must be greater than 0");
       return;
@@ -70,16 +91,11 @@ function SubmitQuote() {
     try {
       setSubmitting(true);
 
-      const totalPrice = unitPrice * (rfq?.quantity || 0);
-
       const quotationData = {
         rfqId,
-        unitPrice,
-        totalPrice,
+        vendorId: vendorProfile.vendor_id,
+        unitPrice: unitPrice.toString(),
         deliveryDays,
-        validityDays,
-        warranty: warranty.trim() || null,
-        certifications: certifications.trim() || null,
         notes: notes.trim() || null,
       };
 
@@ -134,7 +150,7 @@ function SubmitQuote() {
             <AlertCircle className="h-5 w-5" />
             <span className="font-medium">{error}</span>
           </div>
-          <Button onClick={loadRFQ} variant="secondary" className="mt-3">
+          <Button onClick={loadData} variant="secondary" className="mt-3">
             Retry
           </Button>
           <Button onClick={() => nav({ to: "/quotations" })} variant="secondary" className="ml-2 mt-3">
