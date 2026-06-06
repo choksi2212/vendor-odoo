@@ -44,6 +44,21 @@ function RFQDetail() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
   const [vendorProfile, setVendorProfile] = useState<any>(null);
+  const [publishing, setPublishing] = useState(false);
+
+  const handlePublish = async () => {
+    if (!rfq) return;
+    setPublishing(true);
+    try {
+      await rfqAPI.publish(rfq.id);
+      await loadData(); // Reload to show updated status
+      alert("RFQ published successfully! Vendors have been notified.");
+    } catch (err: any) {
+      alert(err.message || "Failed to publish RFQ. Make sure at least one vendor is assigned.");
+    } finally {
+      setPublishing(false);
+    }
+  };
 
   useEffect(() => {
     loadData();
@@ -142,6 +157,11 @@ function RFQDetail() {
             <Button variant="secondary" onClick={() => nav({ to: "/rfq" })}>
               Back
             </Button>
+            {!isVendor && rfq.status === "draft" && (
+              <Button onClick={handlePublish} disabled={publishing}>
+                {publishing ? <><Loader2 className="mr-1 h-4 w-4 animate-spin" />Publishing...</> : "Publish RFQ"}
+              </Button>
+            )}
             {isVendor && vendorProfile?.has_vendor_entity && rfq.status === "open" && (
               <Button onClick={() => nav({ to: `/quotations/submit/${rfq.id}` })}>
                 Submit Quotation
