@@ -97,7 +97,7 @@ def create_vendor(
         email=payload.email,
         phone=payload.phone,
         address=payload.address,
-        category_id=payload.category_id,
+        category_id=payload.category_id if payload.category_id else None,
         created_by=created_by_id,
         status=VendorStatus.ACTIVE,
     )

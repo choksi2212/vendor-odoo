@@ -21,7 +21,7 @@ def list_activity_logs(
     action: Optional[str] = Query(None, description="Filter by action"),
     user_id: Optional[str] = Query(None, description="Filter by user ID"),
     current_user: User = Depends(
-        require_roles(UserRole.ADMIN)
+        require_roles(UserRole.ADMIN, UserRole.PROCUREMENT_OFFICER, UserRole.MANAGER)
     ),
     db: Session = Depends(get_db),
 ):
