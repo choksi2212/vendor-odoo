@@ -69,12 +69,8 @@ function RFQDetail() {
 
   const loadVendorProfile = async () => {
     try {
-      const response = await fetch("/api/users/me/vendor-profile", {
-        headers: {
-          Authorization: `Bearer ${localStorage.getItem("access_token")}`,
-        },
-      });
-      const data = await response.json();
+      const { api } = await import("@/lib/api/client");
+      const data = await api.get<any>("/api/users/me/vendor-profile");
       setVendorProfile(data);
     } catch (err) {
       console.error("Failed to load vendor profile:", err);
