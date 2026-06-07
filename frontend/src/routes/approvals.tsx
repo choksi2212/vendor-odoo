@@ -105,6 +105,8 @@ function ApprovalsPage() {
                   ) : (
                     <span className="text-xs text-muted-foreground">{a.remarks || "-"}</span>
                   )}
+                    <span className="text-xs text-muted-foreground">{a.remarks || "-"}</span>
+                  )}
                 </Td>
               )}
             </Tr>

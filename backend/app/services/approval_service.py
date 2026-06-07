@@ -245,6 +245,22 @@ def approve_request(
     db.commit()
     db.refresh(approval)
     logger.info("Approval approved: id=%s by=%s", approval.id, approved_by_id)
+
+    # Auto-generate Purchase Order
+    try:
+        from app.services.purchase_order_service import create_po_from_approval
+        po = create_po_from_approval(
+            approval_id=str(approval.id),
+            created_by_id=approved_by_id,
+            notes="Auto-generated upon approval.",
+            db=db,
+            request=request,
+        )
+        logger.info("Auto-generated PO: %s for approval %s", po.po_number, approval.id)
+    except Exception as e:
+        # Don't fail the approval if PO generation fails
+        logger.error("Failed to auto-generate PO for approval %s: %s", approval.id, e)
+
     return approval
 
 
