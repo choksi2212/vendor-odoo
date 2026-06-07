@@ -60,6 +60,24 @@ function RFQDetail() {
     }
   };
 
+  const handleInitiateApproval = async () => {
+    if (!rfq || quotations.length === 0) return;
+    const submittedQuotations = quotations.filter((q: any) => q.status === "submitted" || q.status === "selected");
+    if (submittedQuotations.length === 0) {
+      alert("No submitted quotations available for approval.");
+      return;
+    }
+    const selectedQuotation = submittedQuotations[0];
+    try {
+      const { approvalAPI } = await import("@/lib/api/endpoints");
+      await approvalAPI.create(rfq.id, selectedQuotation.id);
+      alert("Approval request sent to manager successfully!");
+      nav({ to: "/approvals" });
+    } catch (err: any) {
+      alert(err.message || "Failed to initiate approval.");
+    }
+  };
+
   useEffect(() => {
     loadData();
     if (isVendor) {
@@ -169,7 +187,7 @@ function RFQDetail() {
               </LinkButton>
             )}
             {!isVendor && user?.role === "procurement_officer" && quotations.length > 0 && (
-              <Button onClick={() => nav({ to: "/approvals" })}>Initiate Approval</Button>
+              <Button onClick={handleInitiateApproval}>Initiate Approval</Button>
             )}
           </>
         }
